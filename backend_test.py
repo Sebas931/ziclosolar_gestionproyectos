@@ -15,7 +15,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-BASE_URL = os.getenv('NEXT_PUBLIC_BASE_URL', 'https://nextrack-app.preview.emergentagent.com')
+# Use localhost for testing since external URL has ingress issues
+BASE_URL = "http://localhost:3000"
 API_BASE = f"{BASE_URL}/api"
 
 class ZikloBackendTester:

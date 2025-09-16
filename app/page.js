@@ -203,6 +203,13 @@ export default function App() {
     }
   };
 
+  // Edit time entry
+  const editTimeEntry = (entry) => {
+    setTimeEntryForm(entry);
+    setEditingId(entry.id);
+    setShowTimeEntryDialog(true);
+  };
+
   // Handle Excel export
   const handleExcelExport = async () => {
     setLoading(true);

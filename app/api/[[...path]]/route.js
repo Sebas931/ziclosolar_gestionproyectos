@@ -750,14 +750,57 @@ export async function POST(request, { params }) {
         created_by: body.created_by || 'system',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        closure_id: null,
-        post_export_adjustment: false
+        closure_id: closureCheck.inException ? closureCheck.closure.id : null,
+        post_export_adjustment: closureCheck.inException ? true : false
       };
       
       await db.collection('time_entries').insertOne(timeEntry);
       await logAudit('CREATE', 'time_entry', timeEntry.id, timeEntry);
       
       return corsResponse(NextResponse.json({ success: true, data: timeEntry }));
+    }
+    
+    // Excel Export endpoint
+    if (pathSegments[0] === 'export-excel') {
+      try {
+        const exportResult = await createExcelExport(body, body.user_id || 'system');
+        
+        // Return file as response
+        const response = new NextResponse(exportResult.excelBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition': `attachment; filename="${exportResult.filename}"`,
+            'X-Closure-Id': exportResult.closure.id,
+            'X-Record-Count': exportResult.recordCount.toString()
+          }
+        });
+        
+        return corsResponse(response);
+      } catch (error) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: `Error en exportación: ${error.message}` 
+        }, { status: 500 }));
+      }
+    }
+    
+    // Reopen closure endpoints
+    if (pathSegments[0] === 'export-closures' && pathSegments[2] === 'reopen') {
+      const closureId = pathSegments[1];
+      const reopenType = body.type || 'total';
+      const partialFilters = body.partial_filters || null;
+      const userId = body.user_id || 'system';
+      
+      try {
+        const result = await reopenClosure(closureId, reopenType, partialFilters, userId);
+        return corsResponse(NextResponse.json({ success: true, data: result }));
+      } catch (error) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: error.message 
+        }, { status: 400 }));
+      }
     }
     
     return corsResponse(NextResponse.json({ success: false, message: 'Endpoint not found' }, { status: 404 }));

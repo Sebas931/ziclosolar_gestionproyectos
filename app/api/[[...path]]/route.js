@@ -504,6 +504,31 @@ export async function GET(request, { params }) {
       return corsResponse(NextResponse.json({ success: true, data: closures }));
     }
     
+    // Export closures with scope details
+    if (pathSegments[0] === 'export-closures-detailed') {
+      const closures = await db.collection('export_closures').aggregate([
+        {
+          $lookup: {
+            from: 'export_closure_scope',
+            localField: 'id',
+            foreignField: 'closure_id',
+            as: 'scope'
+          }
+        },
+        {
+          $lookup: {
+            from: 'export_closure_exceptions',
+            localField: 'id',
+            foreignField: 'closure_id',
+            as: 'exceptions'
+          }
+        },
+        { $sort: { created_at: -1 } }
+      ]).toArray();
+      
+      return corsResponse(NextResponse.json({ success: true, data: closures }));
+    }
+    
     if (pathSegments[0] === 'dashboard') {
       if (pathSegments[1] === 'kpis') {
         // Get basic KPIs

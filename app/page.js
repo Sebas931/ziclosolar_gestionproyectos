@@ -203,11 +203,86 @@ export default function App() {
     }
   };
 
-  // Edit time entry
-  const editTimeEntry = (entry) => {
-    setTimeEntryForm(entry);
-    setEditingId(entry.id);
-    setShowTimeEntryDialog(true);
+  // Handle Excel export
+  const handleExcelExport = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/export-excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(exportFilters)
+      });
+      
+      if (response.ok) {
+        // Get closure info from headers
+        const closureId = response.headers.get('X-Closure-Id');
+        const recordCount = response.headers.get('X-Record-Count');
+        
+        // Download file
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `registros_tiempo_${exportFilters.start_date}_${exportFilters.end_date}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        toast.success(`Exportación completada. ${recordCount} registros exportados. Cierre ${closureId} creado.`);
+        setShowExportDialog(false);
+        await loadData(); // Reload to show updated closures
+      } else {
+        const error = await response.json();
+        toast.error(error.message || 'Error en la exportación');
+      }
+    } catch (error) {
+      toast.error('Error en la exportación: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle closure reopen
+  const handleReopenClosure = async () => {
+    setLoading(true);
+    try {
+      const body = {
+        type: reopenType,
+        user_id: 'admin', // TODO: Replace with actual user ID
+        ...(reopenType === 'partial' && {
+          partial_filters: {
+            start_date: exportFilters.start_date,
+            end_date: exportFilters.end_date,
+            project_ids: exportFilters.project_ids.length ? exportFilters.project_ids : null,
+            cost_center_ids: exportFilters.cost_center_ids.length ? exportFilters.cost_center_ids : null,
+            engineer_ids: exportFilters.engineer_ids.length ? exportFilters.engineer_ids : null,
+            note: 'Reapertura parcial desde UI'
+          }
+        })
+      };
+      
+      const response = await fetch(`/api/export-closures/${selectedClosure.id}/reopen`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success(`Cierre reabierto exitosamente. Estado: ${result.data.status}`);
+        setShowReopenDialog(false);
+        setSelectedClosure(null);
+        await loadData();
+      } else {
+        toast.error(result.message || 'Error al reabrir cierre');
+      }
+    } catch (error) {
+      toast.error('Error al reabrir cierre: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

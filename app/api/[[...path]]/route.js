@@ -684,8 +684,8 @@ export async function POST(request, { params }) {
         }, { status: 400 }));
       }
       
-      // Check export closure
-      const closureCheck = await checkExportClosure(
+      // Check export closure (enhanced version)
+      const closureCheck = await checkExportClosureEnhanced(
         body.project_id, 
         body.cost_center_id, 
         body.engineer_id, 

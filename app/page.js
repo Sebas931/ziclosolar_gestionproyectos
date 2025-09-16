@@ -1076,6 +1076,145 @@ export default function App() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Export Dialog */}
+      <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Exportar Registros a Excel</DialogTitle>
+            <DialogDescription>
+              Selecciona los filtros para la exportación. Se creará un cierre ACTIVO para el rango/alcance exportado.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="export_start_date">Fecha Inicio</Label>
+                <Input
+                  id="export_start_date"
+                  type="date"
+                  value={exportFilters.start_date}
+                  onChange={(e) => setExportFilters({...exportFilters, start_date: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="export_end_date">Fecha Fin</Label>
+                <Input
+                  id="export_end_date"
+                  type="date"
+                  value={exportFilters.end_date}
+                  onChange={(e) => setExportFilters({...exportFilters, end_date: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="export_projects">Proyectos (opcional)</Label>
+              <Select 
+                value={exportFilters.project_ids.join(',')} 
+                onValueChange={(value) => setExportFilters({
+                  ...exportFilters, 
+                  project_ids: value ? value.split(',') : []
+                })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todos los proyectos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todos los proyectos</SelectItem>
+                  {projects.map((project) => (
+                    <SelectItem key={project.id} value={project.id}>
+                      {project.name} ({project.code})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setShowExportDialog(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleExcelExport} disabled={loading}>
+                {loading ? 'Exportando...' : 'Exportar Excel'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reopen Dialog */}
+      <Dialog open={showReopenDialog} onOpenChange={setShowReopenDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reabrir Cierre</DialogTitle>
+            <DialogDescription>
+              ⚠️ Solo administradores pueden reabrir cierres. Los cambios durante la reapertura se marcarán como ajustes post-exportación.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Tipo de Reapertura</Label>
+              <div className="flex gap-4 mt-2">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    value="total"
+                    checked={reopenType === 'total'}
+                    onChange={(e) => setReopenType(e.target.value)}
+                  />
+                  <span>Total</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    value="partial"
+                    checked={reopenType === 'partial'}
+                    onChange={(e) => setReopenType(e.target.value)}
+                  />
+                  <span>Parcial</span>
+                </label>
+              </div>
+            </div>
+
+            {reopenType === 'partial' && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="reopen_start_date">Fecha Inicio</Label>
+                    <Input
+                      id="reopen_start_date"
+                      type="date"
+                      value={exportFilters.start_date}
+                      onChange={(e) => setExportFilters({...exportFilters, start_date: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="reopen_end_date">Fecha Fin</Label>
+                    <Input
+                      id="reopen_end_date"
+                      type="date"
+                      value={exportFilters.end_date}
+                      onChange={(e) => setExportFilters({...exportFilters, end_date: e.target.value})}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setShowReopenDialog(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleReopenClosure} disabled={loading} variant="destructive">
+                {loading ? 'Reabriendo...' : 'Reabrir Cierre'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

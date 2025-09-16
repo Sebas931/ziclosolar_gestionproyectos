@@ -48,6 +48,14 @@ export default function App() {
     concept: { code: '', name: '' }
   });
   
+  // Dialog states
+  const [showTimeEntryDialog, setShowTimeEntryDialog] = useState(false);
+  const [showEntityDialog, setShowEntityDialog] = useState(false);
+  const [currentEntity, setCurrentEntity] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  
+  // Export and reopen states
   const [exportFilters, setExportFilters] = useState({
     start_date: new Date().toISOString().split('T')[0],
     end_date: new Date().toISOString().split('T')[0],

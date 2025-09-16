@@ -76,12 +76,276 @@ function validateDate(dateString) {
   }
 }
 
-// Check if time entry is blocked by export closure
-async function checkExportClosure(projectId, costCenterId, engineerId, date) {
+// Excel export with closure creation
+async function createExcelExport(filters, userId = 'system') {
   try {
-    // Find active closures that might affect this time entry
-    const activeClosure = await db.collection('export_closures').findOne({
+    const { start_date, end_date, project_ids, cost_center_ids, engineer_ids } = filters;
+    
+    // Build query for time entries
+    let query = {};
+    if (start_date && end_date) {
+      query.date = { $gte: start_date, $lte: end_date };
+    }
+    if (project_ids?.length) {
+      query.project_id = { $in: project_ids };
+    }
+    if (cost_center_ids?.length) {
+      query.cost_center_id = { $in: cost_center_ids };
+    }
+    if (engineer_ids?.length) {
+      query.engineer_id = { $in: engineer_ids };
+    }
+    
+    // Get time entries with lookups
+    const timeEntries = await db.collection('time_entries').aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'project_id',
+          foreignField: 'id',
+          as: 'project'
+        }
+      },
+      { $unwind: { path: '$project', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'engineers',
+          localField: 'engineer_id',
+          foreignField: 'id',
+          as: 'engineer'
+        }
+      },
+      { $unwind: { path: '$engineer', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'cost_centers',
+          localField: 'cost_center_id',
+          foreignField: 'id',
+          as: 'cost_center'
+        }
+      },
+      { $unwind: { path: '$cost_center', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'concepts',
+          localField: 'concept_id',
+          foreignField: 'id',
+          as: 'concept'
+        }
+      },
+      { $unwind: { path: '$concept', preserveNullAndEmptyArrays: true } },
+      { $sort: { date: 1, 'project.name': 1 } }
+    ]).toArray();
+    
+    // Create Excel workbook
+    const workbook = XLSX.utils.book_new();
+    
+    // Prepare data for Excel
+    const excelData = timeEntries.map(entry => ({
+      'Fecha': entry.date,
+      'Proyecto': entry.project?.name || 'N/A',
+      'Código Proyecto': entry.project?.code || 'N/A',
+      'Centro de Costo': entry.cost_center?.name || 'N/A',
+      'Código CC': entry.cost_center?.code || 'N/A',
+      'Ingeniero': entry.engineer?.title || 'N/A',
+      'Documento': entry.engineer?.document_number || 'N/A',
+      'Concepto': entry.concept?.name || 'N/A',
+      'Código Concepto': entry.concept?.code || 'N/A',
+      'Horas': entry.hours,
+      'Notas': entry.notes || '',
+      'Creado Por': entry.created_by,
+      'Fecha Creación': entry.created_at,
+      'Post-Export Adj': entry.post_export_adjustment ? 'SÍ' : 'NO'
+    }));
+    
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registros de Tiempo');
+    
+    // Generate buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    
+    // Generate hash for idempotency
+    const exportHash = Buffer.from(JSON.stringify({
+      start_date,
+      end_date,
+      project_ids: project_ids?.sort(),
+      cost_center_ids: cost_center_ids?.sort(),
+      engineer_ids: engineer_ids?.sort(),
+      count: timeEntries.length
+    })).toString('base64');
+    
+    // Check for existing identical closure (idempotency)
+    const existingClosure = await db.collection('export_closures').findOne({
       status: 'ACTIVO',
+      date_start: start_date,
+      date_end: end_date,
+      export_hash: exportHash
+    });
+    
+    let closure;
+    if (existingClosure) {
+      // Update existing closure (increment revision)
+      closure = await db.collection('export_closures').findOneAndUpdate(
+        { id: existingClosure.id },
+        { 
+          $set: { 
+            revision: existingClosure.revision + 1,
+            export_file_id: uuidv4(),
+            created_at: new Date().toISOString()
+          }
+        },
+        { returnDocument: 'after' }
+      );
+      await logAudit('UPDATE', 'export_closure', existingClosure.id, { revision: closure.revision }, userId);
+    } else {
+      // Create new closure
+      const closureId = uuidv4();
+      closure = {
+        id: closureId,
+        status: 'ACTIVO',
+        date_start: start_date,
+        date_end: end_date,
+        created_by: userId,
+        created_at: new Date().toISOString(),
+        export_file_id: uuidv4(),
+        export_hash: exportHash,
+        revision: 1
+      };
+      
+      await db.collection('export_closures').insertOne(closure);
+      
+      // Create closure scope entries
+      const scopeEntries = [];
+      
+      // If no specific filters, means "all" (null values)
+      if (!project_ids?.length && !cost_center_ids?.length && !engineer_ids?.length) {
+        scopeEntries.push({
+          id: uuidv4(),
+          closure_id: closureId,
+          project_id: null,
+          cost_center_id: null,
+          engineer_id: null
+        });
+      } else {
+        // Create specific scope entries
+        const projects = project_ids?.length ? project_ids : [null];
+        const costCenters = cost_center_ids?.length ? cost_center_ids : [null];
+        const engineers = engineer_ids?.length ? engineer_ids : [null];
+        
+        for (const projectId of projects) {
+          for (const costCenterId of costCenters) {
+            for (const engineerId of engineers) {
+              scopeEntries.push({
+                id: uuidv4(),
+                closure_id: closureId,
+                project_id: projectId,
+                cost_center_id: costCenterId,
+                engineer_id: engineerId
+              });
+            }
+          }
+        }
+      }
+      
+      if (scopeEntries.length > 0) {
+        await db.collection('export_closure_scope').insertMany(scopeEntries);
+      }
+      
+      await logAudit('CREATE', 'export_closure', closureId, closure, userId);
+    }
+    
+    return {
+      closure: closure,
+      excelBuffer: excelBuffer,
+      filename: `registros_tiempo_${start_date}_${end_date}.xlsx`,
+      recordCount: timeEntries.length
+    };
+    
+  } catch (error) {
+    console.error('Error creating Excel export:', error);
+    throw error;
+  }
+}
+
+// Reopen closure (total or partial)
+async function reopenClosure(closureId, reopenType = 'total', partialFilters = null, userId = 'system') {
+  try {
+    const closure = await db.collection('export_closures').findOne({ id: closureId });
+    if (!closure) {
+      throw new Error('Cierre no encontrado');
+    }
+    
+    if (closure.status !== 'ACTIVO') {
+      throw new Error('Solo se pueden reabrir cierres ACTIVOS');
+    }
+    
+    let newStatus;
+    if (reopenType === 'total') {
+      newStatus = 'REABIERTO';
+      
+      // Update closure status
+      await db.collection('export_closures').updateOne(
+        { id: closureId },
+        { 
+          $set: { 
+            status: newStatus,
+            reopened_at: new Date().toISOString(),
+            reopened_by: userId
+          }
+        }
+      );
+      
+    } else if (reopenType === 'partial') {
+      newStatus = 'PARCIALMENTE_REABIERTO';
+      
+      // Create partial reopen exception
+      const exceptionId = uuidv4();
+      const exception = {
+        id: exceptionId,
+        closure_id: closureId,
+        date_start: partialFilters.start_date || closure.date_start,
+        date_end: partialFilters.end_date || closure.date_end,
+        projects_override: partialFilters.project_ids || null,
+        cost_centers_override: partialFilters.cost_center_ids || null,
+        engineers_override: partialFilters.engineer_ids || null,
+        created_by: userId,
+        created_at: new Date().toISOString(),
+        note: partialFilters.note || 'Reapertura parcial'
+      };
+      
+      await db.collection('export_closure_exceptions').insertOne(exception);
+      
+      // Update closure status
+      await db.collection('export_closures').updateOne(
+        { id: closureId },
+        { 
+          $set: { 
+            status: newStatus,
+            reopened_at: new Date().toISOString(),
+            reopened_by: userId
+          }
+        }
+      );
+    }
+    
+    await logAudit('REOPEN', 'export_closure', closureId, { type: reopenType, filters: partialFilters }, userId);
+    
+    return { success: true, status: newStatus };
+    
+  } catch (error) {
+    console.error('Error reopening closure:', error);
+    throw error;
+  }
+}
+
+// Enhanced closure check with partial reopen support
+async function checkExportClosureEnhanced(projectId, costCenterId, engineerId, date) {
+  try {
+    // Find active or partially reopened closures
+    const activeClosure = await db.collection('export_closures').findOne({
+      status: { $in: ['ACTIVO', 'PARCIALMENTE_REABIERTO'] },
       date_start: { $lte: date },
       date_end: { $gte: date }
     });
@@ -90,40 +354,73 @@ async function checkExportClosure(projectId, costCenterId, engineerId, date) {
       return { isBlocked: false, closure: null };
     }
 
-    // Check if the scope includes this specific combination
-    const scopeQuery = {
-      closure_id: activeClosure.id,
-      $or: [
-        // All projects (project_id is null)
-        { project_id: null },
-        // Specific project matches
-        { project_id: projectId }
-      ]
-    };
+    // If closure is fully active, check scope
+    if (activeClosure.status === 'ACTIVO') {
+      return await checkClosureScope(activeClosure, projectId, costCenterId, engineerId, date);
+    }
 
-    const scope = await db.collection('export_closure_scope').findOne(scopeQuery);
-    
-    if (scope) {
-      // Additional checks for cost_center and engineer scope
-      const isInScope = (
-        (scope.cost_center_id === null || scope.cost_center_id === costCenterId) &&
-        (scope.engineer_id === null || scope.engineer_id === engineerId)
-      );
-      
-      if (isInScope) {
-        return { 
-          isBlocked: true, 
-          closure: activeClosure,
-          message: `Operación bloqueada por cierre activo del ${activeClosure.date_start} al ${activeClosure.date_end}` 
-        };
+    // If partially reopened, check exceptions
+    if (activeClosure.status === 'PARCIALMENTE_REABIERTO') {
+      const exceptions = await db.collection('export_closure_exceptions').find({
+        closure_id: activeClosure.id,
+        date_start: { $lte: date },
+        date_end: { $gte: date }
+      }).toArray();
+
+      // Check if any exception allows this operation
+      for (const exception of exceptions) {
+        const isInException = (
+          (!exception.projects_override || exception.projects_override.includes(projectId)) &&
+          (!exception.cost_centers_override || exception.cost_centers_override.includes(costCenterId)) &&
+          (!exception.engineers_override || exception.engineers_override.includes(engineerId))
+        );
+        
+        if (isInException) {
+          return { isBlocked: false, closure: activeClosure, inException: true };
+        }
       }
+
+      // If not in any exception, check original scope
+      return await checkClosureScope(activeClosure, projectId, costCenterId, engineerId, date);
     }
 
     return { isBlocked: false, closure: null };
   } catch (error) {
-    console.error('Error checking export closure:', error);
+    console.error('Error checking enhanced export closure:', error);
     return { isBlocked: false, closure: null };
   }
+}
+
+async function checkClosureScope(closure, projectId, costCenterId, engineerId, date) {
+  const scopeQuery = {
+    closure_id: closure.id,
+    $or: [
+      // All projects (project_id is null)
+      { project_id: null },
+      // Specific project matches
+      { project_id: projectId }
+    ]
+  };
+
+  const scope = await db.collection('export_closure_scope').findOne(scopeQuery);
+  
+  if (scope) {
+    // Additional checks for cost_center and engineer scope
+    const isInScope = (
+      (scope.cost_center_id === null || scope.cost_center_id === costCenterId) &&
+      (scope.engineer_id === null || scope.engineer_id === engineerId)
+    );
+    
+    if (isInScope) {
+      return { 
+        isBlocked: true, 
+        closure: closure,
+        message: `Operación bloqueada por cierre ${closure.status.toLowerCase()} del ${closure.date_start} al ${closure.date_end}` 
+      };
+    }
+  }
+
+  return { isBlocked: false, closure: closure };
 }
 
 // Validate daily hours limit

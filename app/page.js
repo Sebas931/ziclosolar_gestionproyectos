@@ -668,7 +668,7 @@ export default function App() {
           <TabsContent value="exports" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Gestión de Exportaciones</h2>
-              <Button variant="outline">
+              <Button onClick={() => setShowExportDialog(true)}>
                 <Download className="h-4 w-4 mr-2" />
                 Nueva Exportación
               </Button>
@@ -685,7 +685,7 @@ export default function App() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                   <div className="p-4 border rounded-lg">
                     <h4 className="font-semibold text-green-600">ACTIVO</h4>
                     <p className="text-sm text-muted-foreground">Cierre aplicado, operaciones bloqueadas</p>
@@ -695,9 +695,65 @@ export default function App() {
                     <p className="text-sm text-muted-foreground">Cierre reabierto para ajustes</p>
                   </div>
                   <div className="p-4 border rounded-lg">
+                    <h4 className="font-semibold text-orange-600">PARCIALMENTE_REABIERTO</h4>
+                    <p className="text-sm text-muted-foreground">Reapertura parcial con excepciones</p>
+                  </div>
+                  <div className="p-4 border rounded-lg">
                     <h4 className="font-semibold text-gray-600">CERRADO_DEFINITIVO</h4>
                     <p className="text-sm text-muted-foreground">Cierre final, sin modificaciones</p>
                   </div>
+                </div>
+
+                {/* Export Closures Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="border-b bg-muted/50">
+                      <tr>
+                        <th className="text-left p-4">Fecha Inicio</th>
+                        <th className="text-left p-4">Fecha Fin</th>
+                        <th className="text-left p-4">Estado</th>
+                        <th className="text-left p-4">Revisión</th>
+                        <th className="text-left p-4">Creado Por</th>
+                        <th className="text-left p-4">Fecha Creación</th>
+                        <th className="text-left p-4">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {exportClosures.map((closure) => (
+                        <tr key={closure.id} className="border-b hover:bg-muted/50">
+                          <td className="p-4">{closure.date_start}</td>
+                          <td className="p-4">{closure.date_end}</td>
+                          <td className="p-4">
+                            <Badge variant={
+                              closure.status === 'ACTIVO' ? 'default' :
+                              closure.status === 'REABIERTO' ? 'secondary' :
+                              closure.status === 'PARCIALMENTE_REABIERTO' ? 'outline' :
+                              'destructive'
+                            }>
+                              {closure.status}
+                            </Badge>
+                          </td>
+                          <td className="p-4">v{closure.revision}</td>
+                          <td className="p-4">{closure.created_by}</td>
+                          <td className="p-4">{new Date(closure.created_at).toLocaleDateString()}</td>
+                          <td className="p-4">
+                            {closure.status === 'ACTIVO' && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedClosure(closure);
+                                  setShowReopenDialog(true);
+                                }}
+                              >
+                                Reabrir
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </CardContent>
             </Card>

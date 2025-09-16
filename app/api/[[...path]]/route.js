@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { MongoClient, Db } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import * as XLSX from 'xlsx';
 
 let client;
 let db;

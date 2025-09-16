@@ -848,7 +848,7 @@ export async function DELETE(request, { params }) {
         }, { status: 404 }));
       }
       
-      const closureCheck = await checkExportClosure(
+      const closureCheck = await checkExportClosureEnhanced(
         entry.project_id, 
         entry.cost_center_id, 
         entry.engineer_id, 

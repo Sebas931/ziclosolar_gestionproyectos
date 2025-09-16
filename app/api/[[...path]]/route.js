@@ -868,7 +868,10 @@ export async function PUT(request, { params }) {
         concept_id: body.concept_id,
         hours: parseFloat(body.hours),
         notes: body.notes || '',
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        // Mark as post-export adjustment if in exception
+        closure_id: closureCheck.inException ? closureCheck.closure.id : null,
+        post_export_adjustment: closureCheck.inException ? true : false
       };
       
       const result = await db.collection('time_entries').findOneAndUpdate(

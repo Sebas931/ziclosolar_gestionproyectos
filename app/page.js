@@ -99,14 +99,15 @@ export default function App() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [projectsRes, costCentersRes, engineersRes, conceptsRes, timeEntriesRes, kpisRes, chartRes] = await Promise.all([
+      const [projectsRes, costCentersRes, engineersRes, conceptsRes, timeEntriesRes, kpisRes, chartRes, closuresRes] = await Promise.all([
         apiCall('projects'),
         apiCall('cost-centers'),
         apiCall('engineers'),
         apiCall('concepts'),
         apiCall('time-entries'),
         apiCall('dashboard/kpis'),
-        apiCall('dashboard/hours-by-project')
+        apiCall('dashboard/hours-by-project'),
+        apiCall('export-closures-detailed')
       ]);
       
       setProjects(projectsRes.data);
@@ -116,6 +117,7 @@ export default function App() {
       setTimeEntries(timeEntriesRes.data);
       setKpis(kpisRes.data);
       setChartData(chartRes.data);
+      setExportClosures(closuresRes.data);
       
     } catch (error) {
       console.error('Error loading data:', error);

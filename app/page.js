@@ -48,12 +48,17 @@ export default function App() {
     concept: { code: '', name: '' }
   });
   
-  // Dialog states
-  const [showTimeEntryDialog, setShowTimeEntryDialog] = useState(false);
-  const [showEntityDialog, setShowEntityDialog] = useState(false);
-  const [currentEntity, setCurrentEntity] = useState('');
-  const [editingId, setEditingId] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [exportFilters, setExportFilters] = useState({
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: new Date().toISOString().split('T')[0],
+    project_ids: [],
+    cost_center_ids: [],
+    engineer_ids: []
+  });
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showReopenDialog, setShowReopenDialog] = useState(false);
+  const [selectedClosure, setSelectedClosure] = useState(null);
+  const [reopenType, setReopenType] = useState('total');
 
   // API calls
   const apiCall = async (endpoint, method = 'GET', data = null) => {

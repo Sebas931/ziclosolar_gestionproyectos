@@ -763,7 +763,7 @@ export async function PUT(request, { params }) {
         }, { status: 400 }));
       }
       
-      const closureCheck = await checkExportClosure(
+      const closureCheck = await checkExportClosureEnhanced(
         body.project_id, 
         body.cost_center_id, 
         body.engineer_id, 

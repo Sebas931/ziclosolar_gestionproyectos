@@ -209,11 +209,29 @@ export default function App() {
     }
   };
 
-  // Edit time entry
-  const editTimeEntry = (entry) => {
-    setTimeEntryForm(entry);
-    setEditingId(entry.id);
-    setShowTimeEntryDialog(true);
+  // Load project time entries
+  const loadProjectTimeEntries = async (projectId) => {
+    setLoading(true);
+    try {
+      const response = await apiCall(`time-entries?project_id=${projectId}`);
+      setProjectTimeEntries(response.data);
+    } catch (error) {
+      console.error('Error loading project time entries:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle project selection
+  const handleProjectSelect = (project) => {
+    setSelectedProject(project);
+    loadProjectTimeEntries(project.id);
+  };
+
+  // Go back to project list
+  const handleBackToProjects = () => {
+    setSelectedProject(null);
+    setProjectTimeEntries([]);
   };
 
   // Handle Excel export

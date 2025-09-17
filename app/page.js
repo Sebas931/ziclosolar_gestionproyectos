@@ -323,7 +323,7 @@ export default function App() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Dashboard
@@ -331,10 +331,6 @@ export default function App() {
             <TabsTrigger value="time-entries" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Registros de Tiempo
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4" />
-              Proyectos
             </TabsTrigger>
             <TabsTrigger value="master-data" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />

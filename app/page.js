@@ -208,7 +208,15 @@ export default function App() {
       await apiCall(`time-entries/${id}`, 'DELETE');
       toast.success('Registro eliminado exitosamente');
       setDeleteConfirm(null);
+      
+      // Reload data
       await loadData();
+      
+      // If we're in project detail view, also reload project time entries
+      if (selectedProject) {
+        await loadProjectTimeEntries(selectedProject.id);
+      }
+      
     } catch (error) {
       // Error already handled in apiCall
     } finally {

@@ -1116,13 +1116,13 @@ export default function App() {
               <Label htmlFor="export_projects">Proyectos (opcional)</Label>
               <Select onValueChange={(value) => setExportFilters({
                 ...exportFilters, 
-                project_ids: value ? [value] : []
+                project_ids: value && value !== "all" ? [value] : []
               })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Todos los proyectos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los proyectos</SelectItem>
+                  <SelectItem value="all">Todos los proyectos</SelectItem>
                   {projects.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name} ({project.code})

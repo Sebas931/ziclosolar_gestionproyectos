@@ -156,7 +156,14 @@ export default function App() {
         notes: ''
       });
       
-      await loadData(); // Reload data
+      // Reload data
+      await loadData();
+      
+      // If we're in project detail view, also reload project time entries
+      if (selectedProject) {
+        await loadProjectTimeEntries(selectedProject.id);
+      }
+      
     } catch (error) {
       // Error already handled in apiCall
     } finally {

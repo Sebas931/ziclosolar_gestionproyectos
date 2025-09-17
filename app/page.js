@@ -67,6 +67,10 @@ export default function App() {
   const [showReopenDialog, setShowReopenDialog] = useState(false);
   const [selectedClosure, setSelectedClosure] = useState(null);
   const [reopenType, setReopenType] = useState('total');
+  
+  // Time entries view states
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [projectTimeEntries, setProjectTimeEntries] = useState([]);
 
   // API calls
   const apiCall = async (endpoint, method = 'GET', data = null) => {

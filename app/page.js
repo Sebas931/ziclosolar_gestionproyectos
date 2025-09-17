@@ -479,67 +479,175 @@ export default function App() {
 
           {/* Time Entries Tab */}
           <TabsContent value="time-entries" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Registros de Tiempo</h2>
-              <Button onClick={() => setShowTimeEntryDialog(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nuevo Registro
-              </Button>
-            </div>
-            
-            <Card>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="border-b bg-muted/50">
-                      <tr>
-                        <th className="text-left p-4">Fecha</th>
-                        <th className="text-left p-4">Proyecto</th>
-                        <th className="text-left p-4">Ingeniero</th>
-                        <th className="text-left p-4">Horas</th>
-                        <th className="text-left p-4">Concepto</th>
-                        <th className="text-left p-4">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {timeEntries.map((entry) => (
-                        <tr key={entry.id} className="border-b hover:bg-muted/50">
-                          <td className="p-4">{entry.date}</td>
-                          <td className="p-4">
-                            {projects.find(p => p.id === entry.project_id)?.name || 'N/A'}
-                          </td>
-                          <td className="p-4">
-                            {engineers.find(e => e.id === entry.engineer_id)?.title || 'N/A'}
-                          </td>
-                          <td className="p-4">{entry.hours}h</td>
-                          <td className="p-4">
-                            {concepts.find(c => c.id === entry.concept_id)?.name || 'N/A'}
-                          </td>
-                          <td className="p-4">
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => editTimeEntry(entry)}
-                              >
-                                <Edit2 className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => setDeleteConfirm(entry.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            {!selectedProject ? (
+              // Project List View
+              <>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold">Registros de Tiempo - Seleccionar Proyecto</h2>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Proyectos Disponibles</CardTitle>
+                    <CardDescription>
+                      Selecciona un proyecto para ver y gestionar sus registros de tiempo
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {projects.map((project) => (
+                        <Card 
+                          key={project.id} 
+                          className="cursor-pointer hover:bg-muted/50 transition-colors"
+                          onClick={() => handleProjectSelect(project)}
+                        >
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <CardTitle className="text-lg">{project.name}</CardTitle>
+                                <CardDescription>Código: {project.code}</CardDescription>
+                              </div>
+                              <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
+                                {project.status}
+                              </Badge>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              <p className="text-sm"><strong>Cliente:</strong> {project.client}</p>
+                              <p className="text-sm"><strong>Centro de Costo:</strong> {
+                                costCenters.find(cc => cc.id === project.cost_center_id)?.name || 'N/A'
+                              }</p>
+                              <div className="pt-2">
+                                <Button variant="outline" size="sm" className="w-full">
+                                  Ver Registros
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              // Project Detail View
+              <>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
+                    <Button variant="outline" onClick={handleBackToProjects}>
+                      ← Volver a Proyectos
+                    </Button>
+                    <div>
+                      <h2 className="text-2xl font-bold">{selectedProject.name}</h2>
+                      <p className="text-muted-foreground">Código: {selectedProject.code} | Cliente: {selectedProject.client}</p>
+                    </div>
+                  </div>
+                  <Button onClick={() => {
+                    // Pre-fill project in form
+                    setTimeEntryForm({
+                      ...timeEntryForm,
+                      project_id: selectedProject.id,
+                      cost_center_id: selectedProject.cost_center_id
+                    });
+                    setShowTimeEntryDialog(true);
+                  }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nuevo Registro
+                  </Button>
+                </div>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Registros de Tiempo</CardTitle>
+                    <CardDescription>
+                      {projectTimeEntries.length} registro(s) encontrado(s) para este proyecto
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="border-b bg-muted/50">
+                          <tr>
+                            <th className="text-left p-4">Fecha</th>
+                            <th className="text-left p-4">Ingeniero</th>
+                            <th className="text-left p-4">Horas</th>
+                            <th className="text-left p-4">Concepto</th>
+                            <th className="text-left p-4">Notas</th>
+                            <th className="text-left p-4">Post-Export</th>
+                            <th className="text-left p-4">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {projectTimeEntries.map((entry) => (
+                            <tr key={entry.id} className="border-b hover:bg-muted/50">
+                              <td className="p-4">{entry.date}</td>
+                              <td className="p-4">
+                                {engineers.find(e => e.id === entry.engineer_id)?.title || 'N/A'}
+                              </td>
+                              <td className="p-4">
+                                <Badge variant="secondary">{entry.hours}h</Badge>
+                              </td>
+                              <td className="p-4">
+                                {concepts.find(c => c.id === entry.concept_id)?.name || 'N/A'}
+                              </td>
+                              <td className="p-4">
+                                <span className="text-sm">{entry.notes || '-'}</span>
+                              </td>
+                              <td className="p-4">
+                                {entry.post_export_adjustment ? (
+                                  <Badge variant="outline" className="text-orange-600">
+                                    Ajuste Post-Export
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="secondary">Normal</Badge>
+                                )}
+                              </td>
+                              <td className="p-4">
+                                <div className="flex gap-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => editTimeEntry(entry)}
+                                  >
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setDeleteConfirm(entry.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      
+                      {projectTimeEntries.length === 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground mb-4">No hay registros de tiempo para este proyecto</p>
+                          <Button onClick={() => {
+                            setTimeEntryForm({
+                              ...timeEntryForm,
+                              project_id: selectedProject.id,
+                              cost_center_id: selectedProject.cost_center_id
+                            });
+                            setShowTimeEntryDialog(true);
+                          }}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Crear Primer Registro
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </TabsContent>
 
           {/* Master Data Tab */}

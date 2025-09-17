@@ -508,40 +508,67 @@ export default function App() {
                       Selecciona un proyecto para ver y gestionar sus registros de tiempo
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {projects.map((project) => (
-                        <Card 
-                          key={project.id} 
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleProjectSelect(project)}
-                        >
-                          <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="text-lg">{project.name}</CardTitle>
-                                <CardDescription>Código: {project.code}</CardDescription>
-                              </div>
-                              <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
-                                {project.status}
-                              </Badge>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-2">
-                              <p className="text-sm"><strong>Cliente:</strong> {project.client}</p>
-                              <p className="text-sm"><strong>Centro de Costo:</strong> {
-                                costCenters.find(cc => cc.id === project.cost_center_id)?.name || 'N/A'
-                              }</p>
-                              <div className="pt-2">
-                                <Button variant="outline" size="sm" className="w-full">
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="border-b bg-muted/50">
+                          <tr>
+                            <th className="text-left p-4">Código</th>
+                            <th className="text-left p-4">Nombre</th>
+                            <th className="text-left p-4">Cliente</th>
+                            <th className="text-left p-4">Centro de Costo</th>
+                            <th className="text-left p-4">Estado</th>
+                            <th className="text-left p-4">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {projects.map((project) => (
+                            <tr 
+                              key={project.id} 
+                              className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
+                              onClick={() => handleProjectSelect(project)}
+                            >
+                              <td className="p-4">
+                                <span className="font-mono text-sm">{project.code}</span>
+                              </td>
+                              <td className="p-4">
+                                <span className="font-medium">{project.name}</span>
+                              </td>
+                              <td className="p-4">
+                                <span className="text-sm">{project.client}</span>
+                              </td>
+                              <td className="p-4">
+                                <span className="text-sm">
+                                  {costCenters.find(cc => cc.id === project.cost_center_id)?.name || 'N/A'}
+                                </span>
+                              </td>
+                              <td className="p-4">
+                                <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
+                                  {project.status}
+                                </Badge>
+                              </td>
+                              <td className="p-4">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent row click
+                                    handleProjectSelect(project);
+                                  }}
+                                >
                                   Ver Registros
                                 </Button>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      
+                      {projects.length === 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground">No hay proyectos disponibles</p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

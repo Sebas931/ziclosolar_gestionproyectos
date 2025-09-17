@@ -513,51 +513,46 @@ export default function App() {
             </Card>
           </TabsContent>
 
-          {/* Projects Tab */}
-          <TabsContent value="projects" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Gestión de Proyectos</h2>
-              <Button onClick={() => {
-                setCurrentEntity('project');
-                setShowEntityDialog(true);
-              }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nuevo Proyecto
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <Card key={project.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{project.name}</CardTitle>
-                        <CardDescription>Código: {project.code}</CardDescription>
-                      </div>
-                      <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
-                        {project.status}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <p className="text-sm"><strong>Cliente:</strong> {project.client}</p>
-                      <p className="text-sm"><strong>Centro de Costo:</strong> {
-                        costCenters.find(cc => cc.id === project.cost_center_id)?.name || 'N/A'
-                      }</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
           {/* Master Data Tab */}
           <TabsContent value="master-data" className="space-y-6">
             <h2 className="text-2xl font-bold">Datos Maestros</h2>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+              {/* Projects */}
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Proyectos</CardTitle>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setCurrentEntity('project');
+                        setShowEntityDialog(true);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {projects.map((project) => (
+                      <div key={project.id} className="flex justify-between items-center p-2 border rounded">
+                        <div>
+                          <p className="font-medium">{project.name}</p>
+                          <p className="text-sm text-muted-foreground">{project.code}</p>
+                          <p className="text-xs text-muted-foreground">Cliente: {project.client}</p>
+                        </div>
+                        <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
+                          {project.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Cost Centers */}
               <Card>
                 <CardHeader>

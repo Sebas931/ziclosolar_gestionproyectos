@@ -827,7 +827,6 @@ export default function App() {
                         <div>
                           <p className="font-medium">{project.name}</p>
                           <p className="text-sm text-muted-foreground">{project.code}</p>
-                          <p className="text-xs text-muted-foreground">Cliente: {project.client}</p>
                         </div>
                         <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
                           {project.status}

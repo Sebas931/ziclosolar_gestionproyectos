@@ -25,6 +25,7 @@ export default function App() {
   const [costCenters, setCostCenters] = useState([]);
   const [engineers, setEngineers] = useState([]);
   const [concepts, setConcepts] = useState([]);
+  const [appUsers, setAppUsers] = useState([]);
   const [timeEntries, setTimeEntries] = useState([]);
   const [exportClosures, setExportClosures] = useState([]);
   const [kpis, setKpis] = useState({});

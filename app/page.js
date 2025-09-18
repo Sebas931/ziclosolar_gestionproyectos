@@ -306,6 +306,14 @@ export default function App() {
   // Handle project selection
   const handleProjectSelect = (project) => {
     setSelectedProject(project);
+    // Clear time entry filters when selecting a new project
+    setTimeEntryFilters({
+      start_date: '',
+      end_date: '',
+      engineer_id: '',
+      concept_id: '',
+      post_export_status: ''
+    });
     loadProjectTimeEntries(project.id);
   };
 
@@ -313,6 +321,14 @@ export default function App() {
   const handleBackToProjects = () => {
     setSelectedProject(null);
     setProjectTimeEntries([]);
+    // Clear time entry filters when going back
+    setTimeEntryFilters({
+      start_date: '',
+      end_date: '',
+      engineer_id: '',
+      concept_id: '',
+      post_export_status: ''
+    });
   };
 
   // Edit time entry

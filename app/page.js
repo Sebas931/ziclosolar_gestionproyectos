@@ -534,10 +534,93 @@ export default function App() {
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Proyectos Disponibles</CardTitle>
-                    <CardDescription>
-                      Selecciona un proyecto para ver y gestionar sus registros de tiempo
-                    </CardDescription>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle>Proyectos Disponibles</CardTitle>
+                        <CardDescription>
+                          Selecciona un proyecto para ver y gestionar sus registros de tiempo
+                        </CardDescription>
+                      </div>
+                      
+                      {/* Project Filters */}
+                      <div className="flex flex-col gap-3 min-w-80">
+                        <h4 className="font-medium text-sm">Filtros</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label htmlFor="filter_code" className="text-xs">Código</Label>
+                            <Input
+                              id="filter_code"
+                              placeholder="Filtrar por código"
+                              value={projectFilters.code}
+                              onChange={(e) => setProjectFilters({...projectFilters, code: e.target.value})}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_name" className="text-xs">Nombre</Label>
+                            <Input
+                              id="filter_name"
+                              placeholder="Filtrar por nombre"
+                              value={projectFilters.name}
+                              onChange={(e) => setProjectFilters({...projectFilters, name: e.target.value})}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_client" className="text-xs">Cliente</Label>
+                            <Input
+                              id="filter_client"
+                              placeholder="Filtrar por cliente"
+                              value={projectFilters.client}
+                              onChange={(e) => setProjectFilters({...projectFilters, client: e.target.value})}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_cost_center" className="text-xs">Centro de Costo</Label>
+                            <Select value={projectFilters.cost_center_id} onValueChange={(value) => setProjectFilters({...projectFilters, cost_center_id: value})}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="">Todos los centros</SelectItem>
+                                {costCenters.map((cc) => (
+                                  <SelectItem key={cc.id} value={cc.id}>
+                                    {cc.name} ({cc.code})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_status" className="text-xs">Estado</Label>
+                            <Select value={projectFilters.status} onValueChange={(value) => setProjectFilters({...projectFilters, status: value})}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="">Todos los estados</SelectItem>
+                                <SelectItem value="active">Activo</SelectItem>
+                                <SelectItem value="inactive">Inactivo</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="flex items-end">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={clearProjectFilters}
+                              className="h-8 text-xs"
+                            >
+                              Limpiar Filtros
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Mostrando {filteredProjects.length} de {projects.length} proyectos
+                        </div>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="overflow-x-auto">
@@ -553,7 +636,7 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
-                          {projects.map((project) => (
+                          {filteredProjects.map((project) => (
                             <tr 
                               key={project.id} 
                               className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
@@ -594,6 +677,15 @@ export default function App() {
                           ))}
                         </tbody>
                       </table>
+                      
+                      {filteredProjects.length === 0 && projects.length > 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground mb-2">No se encontraron proyectos con los filtros aplicados</p>
+                          <Button variant="outline" size="sm" onClick={clearProjectFilters}>
+                            Limpiar Filtros
+                          </Button>
+                        </div>
+                      )}
                       
                       {projects.length === 0 && (
                         <div className="text-center py-8">

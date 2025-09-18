@@ -42,7 +42,7 @@ export default function App() {
   });
   
   const [entityForms, setEntityForms] = useState({
-    project: { code: '', name: '', client: '', cost_center_id: '' },
+    project: { code: '', name: '', cost_center_id: '' },
     costCenter: { code: '', name: '' },
     engineer: { document_number: '', title: '', user_id: '' },
     concept: { code: '', name: '' }

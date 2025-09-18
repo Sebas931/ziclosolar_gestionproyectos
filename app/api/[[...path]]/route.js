@@ -704,6 +704,59 @@ export async function POST(request, { params }) {
       return corsResponse(NextResponse.json({ success: true, data: concept }));
     }
     
+    if (pathSegments[0] === 'app-users') {
+      const appUser = {
+        id: uuidv4(),
+        nombre: body.nombre,
+        apellido: body.apellido,
+        documento: body.documento,
+        correo: body.correo,
+        cargo: body.cargo,
+        rol: body.rol, // 'admin' or 'lider'
+        status: body.status || 'active',
+        created_at: new Date().toISOString(),
+        created_by: body.created_by || 'system',
+        updated_at: new Date().toISOString(),
+        updated_by: body.created_by || 'system'
+      };
+      
+      // Validate required fields
+      if (!appUser.nombre || !appUser.apellido || !appUser.documento || !appUser.correo || !appUser.rol) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Todos los campos obligatorios deben ser completados' 
+        }, { status: 400 }));
+      }
+      
+      // Validate role
+      if (!['admin', 'lider'].includes(appUser.rol)) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'El rol debe ser admin o lider' 
+        }, { status: 400 }));
+      }
+      
+      // Check for duplicate document or email
+      const existingUser = await db.collection('app_users').findOne({
+        $or: [
+          { documento: appUser.documento },
+          { correo: appUser.correo }
+        ]
+      });
+      
+      if (existingUser) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Ya existe un usuario con ese documento o correo electrónico' 
+        }, { status: 400 }));
+      }
+      
+      await db.collection('app_users').insertOne(appUser);
+      await logAudit('CREATE', 'app_user', appUser.id, appUser);
+      
+      return corsResponse(NextResponse.json({ success: true, data: appUser }));
+    }
+    
     if (pathSegments[0] === 'time-entries') {
       const dateValidation = validateDate(body.date);
       if (!dateValidation.isValid) {

@@ -641,7 +641,6 @@ export async function POST(request, { params }) {
         id: uuidv4(),
         code: body.code,
         name: body.name,
-        client: body.client,
         status: body.status || 'active',
         leader_user_id: body.leader_user_id,
         cost_center_id: body.cost_center_id,

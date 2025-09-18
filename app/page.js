@@ -241,6 +241,35 @@ export default function App() {
     }
   };
 
+  // Filter time entries based on current filters
+  const filteredTimeEntries = projectTimeEntries.filter(entry => {
+    const entryDate = entry.date;
+    const startDateMatch = !timeEntryFilters.start_date || entryDate >= timeEntryFilters.start_date;
+    const endDateMatch = !timeEntryFilters.end_date || entryDate <= timeEntryFilters.end_date;
+    const engineerMatch = !timeEntryFilters.engineer_id || entry.engineer_id === timeEntryFilters.engineer_id;
+    const conceptMatch = !timeEntryFilters.concept_id || entry.concept_id === timeEntryFilters.concept_id;
+    
+    let postExportMatch = true;
+    if (timeEntryFilters.post_export_status === 'normal') {
+      postExportMatch = !entry.post_export_adjustment;
+    } else if (timeEntryFilters.post_export_status === 'post_export') {
+      postExportMatch = entry.post_export_adjustment;
+    }
+    
+    return startDateMatch && endDateMatch && engineerMatch && conceptMatch && postExportMatch;
+  });
+
+  // Clear time entry filters
+  const clearTimeEntryFilters = () => {
+    setTimeEntryFilters({
+      start_date: '',
+      end_date: '',
+      engineer_id: '',
+      concept_id: '',
+      post_export_status: ''
+    });
+  };
+
   // Filter projects based on current filters
   const filteredProjects = projects.filter(project => {
     return (

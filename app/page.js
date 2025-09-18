@@ -46,7 +46,8 @@ export default function App() {
     project: { code: '', name: '', cost_center_id: '' },
     costCenter: { code: '', name: '' },
     engineer: { document_number: '', title: '', user_id: '' },
-    concept: { code: '', name: '' }
+    concept: { code: '', name: '' },
+    appUser: { nombre: '', apellido: '', documento: '', correo: '', cargo: '', rol: '' }
   });
   
   // Dialog states

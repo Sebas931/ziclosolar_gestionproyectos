@@ -950,9 +950,9 @@ export default function App() {
             )}
           </TabsContent>
 
-          {/* Master Data Tab */}
-          <TabsContent value="master-data" className="space-y-6">
-            <h2 className="text-2xl font-bold">Datos Maestros</h2>
+          {/* Admin Panel Tab */}
+          <TabsContent value="admin-panel" className="space-y-6">
+            <h2 className="text-2xl font-bold">Panel de Administración</h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
               {/* Projects */}

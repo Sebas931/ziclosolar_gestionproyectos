@@ -458,9 +458,9 @@ export default function App() {
               <Clock className="h-4 w-4" />
               Registros de Tiempo
             </TabsTrigger>
-            <TabsTrigger value="master-data" className="flex items-center gap-2">
+            <TabsTrigger value="admin-panel" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
-              Datos Maestros
+              Panel de Administración
             </TabsTrigger>
             <TabsTrigger value="exports" className="flex items-center gap-2">
               <Download className="h-4 w-4" />

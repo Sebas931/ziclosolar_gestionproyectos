@@ -233,6 +233,28 @@ export default function App() {
     }
   };
 
+  // Filter projects based on current filters
+  const filteredProjects = projects.filter(project => {
+    return (
+      project.code.toLowerCase().includes(projectFilters.code.toLowerCase()) &&
+      project.name.toLowerCase().includes(projectFilters.name.toLowerCase()) &&
+      project.client.toLowerCase().includes(projectFilters.client.toLowerCase()) &&
+      (projectFilters.cost_center_id === '' || project.cost_center_id === projectFilters.cost_center_id) &&
+      (projectFilters.status === '' || project.status === projectFilters.status)
+    );
+  });
+
+  // Clear project filters
+  const clearProjectFilters = () => {
+    setProjectFilters({
+      code: '',
+      name: '',
+      client: '',
+      cost_center_id: '',
+      status: ''
+    });
+  };
+
   // Load project time entries
   const loadProjectTimeEntries = async (projectId) => {
     setLoading(true);

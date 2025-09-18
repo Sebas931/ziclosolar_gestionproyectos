@@ -746,10 +746,99 @@ export default function App() {
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Registros de Tiempo</CardTitle>
-                    <CardDescription>
-                      {projectTimeEntries.length} registro(s) encontrado(s) para este proyecto
-                    </CardDescription>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle>Registros de Tiempo</CardTitle>
+                        <CardDescription>
+                          {filteredTimeEntries.length} de {projectTimeEntries.length} registro(s) para este proyecto
+                        </CardDescription>
+                      </div>
+                      
+                      {/* Time Entry Filters */}
+                      <div className="flex flex-col gap-3 min-w-96">
+                        <h4 className="font-medium text-sm">Filtros</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label htmlFor="filter_start_date" className="text-xs">Fecha Inicio</Label>
+                            <Input
+                              id="filter_start_date"
+                              type="date"
+                              value={timeEntryFilters.start_date}
+                              onChange={(e) => setTimeEntryFilters({...timeEntryFilters, start_date: e.target.value})}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_end_date" className="text-xs">Fecha Fin</Label>
+                            <Input
+                              id="filter_end_date"
+                              type="date"
+                              value={timeEntryFilters.end_date}
+                              onChange={(e) => setTimeEntryFilters({...timeEntryFilters, end_date: e.target.value})}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_engineer" className="text-xs">Ingeniero</Label>
+                            <Select value={timeEntryFilters.engineer_id} onValueChange={(value) => setTimeEntryFilters({...timeEntryFilters, engineer_id: value === "all" ? "" : value})}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">Todos los ingenieros</SelectItem>
+                                {engineers.map((engineer) => (
+                                  <SelectItem key={engineer.id} value={engineer.id}>
+                                    {engineer.title}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_concept" className="text-xs">Concepto</Label>
+                            <Select value={timeEntryFilters.concept_id} onValueChange={(value) => setTimeEntryFilters({...timeEntryFilters, concept_id: value === "all" ? "" : value})}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">Todos los conceptos</SelectItem>
+                                {concepts.map((concept) => (
+                                  <SelectItem key={concept.id} value={concept.id}>
+                                    {concept.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="filter_post_export" className="text-xs">Estado Post-Export</Label>
+                            <Select value={timeEntryFilters.post_export_status} onValueChange={(value) => setTimeEntryFilters({...timeEntryFilters, post_export_status: value === "all" ? "" : value})}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">Todos los estados</SelectItem>
+                                <SelectItem value="normal">Normal</SelectItem>
+                                <SelectItem value="post_export">Post-Export</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="flex items-end">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={clearTimeEntryFilters}
+                              className="h-8 text-xs"
+                            >
+                              Limpiar Filtros
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Mostrando {filteredTimeEntries.reduce((sum, entry) => sum + parseFloat(entry.hours), 0).toFixed(1)}h de {projectTimeEntries.reduce((sum, entry) => sum + parseFloat(entry.hours), 0).toFixed(1)}h totales
+                        </div>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="overflow-x-auto">
@@ -766,7 +855,7 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
-                          {projectTimeEntries.map((entry) => (
+                          {filteredTimeEntries.map((entry) => (
                             <tr key={entry.id} className="border-b hover:bg-muted/50">
                               <td className="p-4">{entry.date}</td>
                               <td className="p-4">
@@ -812,6 +901,15 @@ export default function App() {
                           ))}
                         </tbody>
                       </table>
+                      
+                      {filteredTimeEntries.length === 0 && projectTimeEntries.length > 0 && (
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground mb-2">No se encontraron registros con los filtros aplicados</p>
+                          <Button variant="outline" size="sm" onClick={clearTimeEntryFilters}>
+                            Limpiar Filtros
+                          </Button>
+                        </div>
+                      )}
                       
                       {projectTimeEntries.length === 0 && (
                         <div className="text-center py-8">

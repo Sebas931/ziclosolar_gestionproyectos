@@ -616,7 +616,6 @@ export default function App() {
                           <tr>
                             <th className="text-left p-4">Código</th>
                             <th className="text-left p-4">Nombre</th>
-                            <th className="text-left p-4">Cliente</th>
                             <th className="text-left p-4">Centro de Costo</th>
                             <th className="text-left p-4">Estado</th>
                             <th className="text-left p-4">Acciones</th>
@@ -634,9 +633,6 @@ export default function App() {
                               </td>
                               <td className="p-4">
                                 <span className="font-medium">{project.name}</span>
-                              </td>
-                              <td className="p-4">
-                                <span className="text-sm">{project.client}</span>
                               </td>
                               <td className="p-4">
                                 <span className="text-sm">

@@ -578,12 +578,12 @@ export default function App() {
                           </div>
                           <div>
                             <Label htmlFor="filter_cost_center" className="text-xs">Centro de Costo</Label>
-                            <Select value={projectFilters.cost_center_id} onValueChange={(value) => setProjectFilters({...projectFilters, cost_center_id: value})}>
+                            <Select value={projectFilters.cost_center_id} onValueChange={(value) => setProjectFilters({...projectFilters, cost_center_id: value === "all" ? "" : value})}>
                               <SelectTrigger className="h-8 text-sm">
                                 <SelectValue placeholder="Todos" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">Todos los centros</SelectItem>
+                                <SelectItem value="all">Todos los centros</SelectItem>
                                 {costCenters.map((cc) => (
                                   <SelectItem key={cc.id} value={cc.id}>
                                     {cc.name} ({cc.code})
@@ -594,12 +594,12 @@ export default function App() {
                           </div>
                           <div>
                             <Label htmlFor="filter_status" className="text-xs">Estado</Label>
-                            <Select value={projectFilters.status} onValueChange={(value) => setProjectFilters({...projectFilters, status: value})}>
+                            <Select value={projectFilters.status} onValueChange={(value) => setProjectFilters({...projectFilters, status: value === "all" ? "" : value})}>
                               <SelectTrigger className="h-8 text-sm">
                                 <SelectValue placeholder="Todos" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">Todos los estados</SelectItem>
+                                <SelectItem value="all">Todos los estados</SelectItem>
                                 <SelectItem value="active">Activo</SelectItem>
                                 <SelectItem value="inactive">Inactivo</SelectItem>
                               </SelectContent>

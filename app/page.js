@@ -76,7 +76,6 @@ export default function App() {
   const [projectFilters, setProjectFilters] = useState({
     code: '',
     name: '',
-    client: '',
     cost_center_id: '',
     status: ''
   });

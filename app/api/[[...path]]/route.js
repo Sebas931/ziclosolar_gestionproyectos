@@ -1029,6 +1029,22 @@ export async function DELETE(request, { params }) {
   try {
     const id = pathSegments[1];
     
+    if (pathSegments[0] === 'app-users') {
+      // Get the user first to check if exists
+      const user = await db.collection('app_users').findOne({ id: id });
+      if (!user) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Usuario no encontrado' 
+        }, { status: 404 }));
+      }
+      
+      await db.collection('app_users').deleteOne({ id: id });
+      await logAudit('DELETE', 'app_user', id, user);
+      
+      return corsResponse(NextResponse.json({ success: true, message: 'Usuario eliminado exitosamente' }));
+    }
+    
     if (pathSegments[0] === 'time-entries') {
       // Get the entry first to check closure
       const entry = await db.collection('time_entries').findOne({ id: id });

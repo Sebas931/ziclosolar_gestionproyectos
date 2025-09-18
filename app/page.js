@@ -197,7 +197,9 @@ export default function App() {
       const endpoint = currentEntity === 'costCenter' ? 'cost-centers' : `${currentEntity}s`;
       await apiCall(endpoint, 'POST', entityForms[currentEntity]);
       
-      toast.success(`${currentEntity === 'costCenter' ? 'Centro de costos' : currentEntity} creado exitosamente`);
+      toast.success(`${currentEntity === 'costCenter' ? 'Centro de costos' : 
+                      currentEntity === 'engineer' ? 'Ingeniero' : 
+                      currentEntity === 'concept' ? 'Concepto' : 'Proyecto'} creado exitosamente`);
       setShowEntityDialog(false);
       setEntityForms({
         ...entityForms,

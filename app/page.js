@@ -71,6 +71,15 @@ export default function App() {
   // Time entries view states
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectTimeEntries, setProjectTimeEntries] = useState([]);
+  
+  // Project filters
+  const [projectFilters, setProjectFilters] = useState({
+    code: '',
+    name: '',
+    client: '',
+    cost_center_id: '',
+    status: ''
+  });
 
   // API calls
   const apiCall = async (endpoint, method = 'GET', data = null) => {

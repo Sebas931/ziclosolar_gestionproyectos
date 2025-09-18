@@ -122,11 +122,12 @@ export default function App() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [projectsRes, costCentersRes, engineersRes, conceptsRes, timeEntriesRes, kpisRes, chartRes, closuresRes] = await Promise.all([
+      const [projectsRes, costCentersRes, engineersRes, conceptsRes, appUsersRes, timeEntriesRes, kpisRes, chartRes, closuresRes] = await Promise.all([
         apiCall('projects'),
         apiCall('cost-centers'),
         apiCall('engineers'),
         apiCall('concepts'),
+        apiCall('app-users'),
         apiCall('time-entries'),
         apiCall('dashboard/kpis'),
         apiCall('dashboard/hours-by-project'),
@@ -137,6 +138,7 @@ export default function App() {
       setCostCenters(costCentersRes.data);
       setEngineers(engineersRes.data);
       setConcepts(conceptsRes.data);
+      setAppUsers(appUsersRes.data);
       setTimeEntries(timeEntriesRes.data);
       setKpis(kpisRes.data);
       setChartData(chartRes.data);

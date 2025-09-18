@@ -461,6 +461,11 @@ export async function GET(request, { params }) {
       return corsResponse(NextResponse.json({ success: true, data: users }));
     }
     
+    if (pathSegments[0] === 'app-users') {
+      const appUsers = await db.collection('app_users').find({}).toArray();
+      return corsResponse(NextResponse.json({ success: true, data: appUsers }));
+    }
+    
     if (pathSegments[0] === 'projects') {
       const projects = await db.collection('projects').find({}).toArray();
       return corsResponse(NextResponse.json({ success: true, data: projects }));

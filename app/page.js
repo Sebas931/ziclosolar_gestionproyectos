@@ -1326,6 +1326,9 @@ export default function App() {
                      currentEntity === 'engineer' ? 'Ingeniero' : 
                      currentEntity === 'concept' ? 'Concepto' : 'Proyecto'}
             </DialogTitle>
+            <DialogDescription>
+              Crear nueva entidad en el Panel de Administración
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleEntitySubmit} className="space-y-4">
             {currentEntity === 'project' && (

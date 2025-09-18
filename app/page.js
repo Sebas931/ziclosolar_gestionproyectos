@@ -72,6 +72,15 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectTimeEntries, setProjectTimeEntries] = useState([]);
   
+  // Time entries filters
+  const [timeEntryFilters, setTimeEntryFilters] = useState({
+    start_date: '',
+    end_date: '',
+    engineer_id: '',
+    concept_id: '',
+    post_export_status: '' // 'all', 'normal', 'post_export'
+  });
+  
   // Project filters
   const [projectFilters, setProjectFilters] = useState({
     code: '',

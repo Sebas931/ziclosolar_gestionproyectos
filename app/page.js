@@ -193,7 +193,7 @@ export default function App() {
       setEntityForms({
         ...entityForms,
         [currentEntity]: currentEntity === 'project' 
-          ? { code: '', name: '', client: '', cost_center_id: '' }
+          ? { code: '', name: '', cost_center_id: '' }
           : currentEntity === 'costCenter'
           ? { code: '', name: '' }
           : currentEntity === 'engineer'

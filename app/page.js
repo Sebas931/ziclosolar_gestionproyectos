@@ -1205,18 +1205,6 @@ export default function App() {
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="client">Cliente</Label>
-                  <Input
-                    id="client"
-                    value={entityForms.project.client}
-                    onChange={(e) => setEntityForms({
-                      ...entityForms,
-                      project: {...entityForms.project, client: e.target.value}
-                    })}
-                    required
-                  />
-                </div>
-                <div>
                   <Label htmlFor="cost_center_id">Centro de Costo</Label>
                   <Select value={entityForms.project.cost_center_id} onValueChange={(value) => setEntityForms({
                     ...entityForms,

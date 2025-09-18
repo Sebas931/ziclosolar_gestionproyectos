@@ -689,7 +689,7 @@ export default function App() {
                     </Button>
                     <div>
                       <h2 className="text-2xl font-bold">{selectedProject.name}</h2>
-                      <p className="text-muted-foreground">Código: {selectedProject.code} | Cliente: {selectedProject.client}</p>
+                      <p className="text-muted-foreground">Código: {selectedProject.code}</p>
                     </div>
                   </div>
                   <Button onClick={() => {

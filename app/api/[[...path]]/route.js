@@ -878,6 +878,69 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const id = pathSegments[1];
     
+    if (pathSegments[0] === 'app-users') {
+      const updateData = {
+        nombre: body.nombre,
+        apellido: body.apellido,
+        documento: body.documento,
+        correo: body.correo,
+        cargo: body.cargo,
+        rol: body.rol,
+        status: body.status,
+        updated_at: new Date().toISOString(),
+        updated_by: body.updated_by || 'system'
+      };
+      
+      // Validate required fields
+      if (!updateData.nombre || !updateData.apellido || !updateData.documento || !updateData.correo || !updateData.rol) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Todos los campos obligatorios deben ser completados' 
+        }, { status: 400 }));
+      }
+      
+      // Validate role
+      if (!['admin', 'lider'].includes(updateData.rol)) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'El rol debe ser admin o lider' 
+        }, { status: 400 }));
+      }
+      
+      // Check for duplicate document or email (excluding current user)
+      const existingUser = await db.collection('app_users').findOne({
+        id: { $ne: id },
+        $or: [
+          { documento: updateData.documento },
+          { correo: updateData.correo }
+        ]
+      });
+      
+      if (existingUser) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Ya existe otro usuario con ese documento o correo electrónico' 
+        }, { status: 400 }));
+      }
+      
+      const result = await db.collection('app_users').findOneAndUpdate(
+        { id: id },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+      
+      if (!result) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Usuario no encontrado' 
+        }, { status: 404 }));
+      }
+      
+      await logAudit('UPDATE', 'app_user', id, updateData);
+      
+      return corsResponse(NextResponse.json({ success: true, data: result }));
+    }
+    
     if (pathSegments[0] === 'time-entries') {
       // Check export closure before updating
       const dateValidation = validateDate(body.date);

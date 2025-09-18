@@ -237,7 +237,6 @@ export default function App() {
     return (
       project.code.toLowerCase().includes(projectFilters.code.toLowerCase()) &&
       project.name.toLowerCase().includes(projectFilters.name.toLowerCase()) &&
-      project.client.toLowerCase().includes(projectFilters.client.toLowerCase()) &&
       (projectFilters.cost_center_id === '' || project.cost_center_id === projectFilters.cost_center_id) &&
       (projectFilters.status === '' || project.status === projectFilters.status)
     );
@@ -248,7 +247,6 @@ export default function App() {
     setProjectFilters({
       code: '',
       name: '',
-      client: '',
       cost_center_id: '',
       status: ''
     });

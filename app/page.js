@@ -564,16 +564,6 @@ export default function App() {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="filter_client" className="text-xs">Cliente</Label>
-                            <Input
-                              id="filter_client"
-                              placeholder="Filtrar por cliente"
-                              value={projectFilters.client}
-                              onChange={(e) => setProjectFilters({...projectFilters, client: e.target.value})}
-                              className="h-8 text-sm"
-                            />
-                          </div>
-                          <div>
                             <Label htmlFor="filter_cost_center" className="text-xs">Centro de Costo</Label>
                             <Select value={projectFilters.cost_center_id} onValueChange={(value) => setProjectFilters({...projectFilters, cost_center_id: value === "all" ? "" : value})}>
                               <SelectTrigger className="h-8 text-sm">
@@ -602,7 +592,7 @@ export default function App() {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div className="flex items-end">
+                          <div className="flex items-end col-span-2">
                             <Button 
                               variant="outline" 
                               size="sm" 

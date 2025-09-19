@@ -1239,9 +1239,18 @@ export default function App() {
                           <p className="font-medium">{concept.name}</p>
                           <p className="text-sm text-muted-foreground">{concept.code}</p>
                         </div>
-                        <Badge variant={concept.status === 'active' ? 'default' : 'secondary'}>
-                          {concept.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => editEntity(concept, 'concept')}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Badge variant={concept.status === 'active' ? 'default' : 'secondary'}>
+                            {concept.status}
+                          </Badge>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -1585,6 +1585,21 @@ export default function App() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <Label htmlFor="project_status">Estado</Label>
+                  <Select value={entityForms.project.status || 'active'} onValueChange={(value) => setEntityForms({
+                    ...entityForms,
+                    project: {...entityForms.project, status: value}
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Activo</SelectItem>
+                      <SelectItem value="inactive">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </>
             )}
 

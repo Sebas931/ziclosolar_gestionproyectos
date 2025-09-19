@@ -892,6 +892,11 @@ export async function PUT(request, { params }) {
         updated_by: body.updated_by || 'system'
       };
       
+      // Only update password if provided
+      if (body.clave && body.clave.trim() !== '') {
+        updateData.clave = body.clave;
+      }
+      
       // Validate required fields
       if (!updateData.nombre || !updateData.apellido || !updateData.documento || !updateData.correo || !updateData.rol) {
         return corsResponse(NextResponse.json({ 
@@ -937,9 +942,9 @@ export async function PUT(request, { params }) {
         }, { status: 404 }));
       }
       
-      await logAudit('UPDATE', 'app_user', id, updateData);
+      await logAudit('UPDATE', 'app_user', id, { ...updateData, clave: updateData.clave ? '[HIDDEN]' : undefined });
       
-      return corsResponse(NextResponse.json({ success: true, data: result }));
+      return corsResponse(NextResponse.json({ success: true, data: { ...result, clave: '[HIDDEN]' } }));
     }
     
     if (pathSegments[0] === 'time-entries') {

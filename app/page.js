@@ -198,12 +198,15 @@ export default function App() {
     setLoading(true);
     
     try {
-      const endpoint = currentEntity === 'costCenter' ? 'cost-centers' : `${currentEntity}s`;
+      const endpoint = currentEntity === 'costCenter' ? 'cost-centers' : 
+                      currentEntity === 'appUser' ? 'app-users' : 
+                      `${currentEntity}s`;
       await apiCall(endpoint, 'POST', entityForms[currentEntity]);
       
       toast.success(`${currentEntity === 'costCenter' ? 'Centro de costos' : 
                       currentEntity === 'engineer' ? 'Ingeniero' : 
-                      currentEntity === 'concept' ? 'Concepto' : 'Proyecto'} creado exitosamente`);
+                      currentEntity === 'concept' ? 'Concepto' : 
+                      currentEntity === 'appUser' ? 'Usuario' : 'Proyecto'} creado exitosamente`);
       setShowEntityDialog(false);
       setEntityForms({
         ...entityForms,
@@ -213,6 +216,8 @@ export default function App() {
           ? { code: '', name: '' }
           : currentEntity === 'engineer'
           ? { document_number: '', title: '', user_id: '' }
+          : currentEntity === 'appUser'
+          ? { nombre: '', apellido: '', documento: '', correo: '', cargo: '', rol: '' }
           : { code: '', name: '' }
       });
       

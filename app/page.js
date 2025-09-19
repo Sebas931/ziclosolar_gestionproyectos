@@ -1057,15 +1057,25 @@ export default function App() {
                 <CardContent>
                   <div className="space-y-2">
                     {appUsers.map((user) => (
-                      <div key={user.id} className="flex justify-between items-center p-2 border rounded">
-                        <div>
+                      <div key={user.id} className="flex justify-between items-center p-3 border rounded">
+                        <div className="flex-1">
                           <p className="font-medium">{user.nombre} {user.apellido}</p>
                           <p className="text-sm text-muted-foreground">{user.correo}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2 mt-1">
                             <Badge variant={user.rol === 'admin' ? 'default' : 'secondary'} className="text-xs">
                               {user.rol}
                             </Badge>
-                          </p>
+                            {user.created_at && (
+                              <span className="text-xs text-muted-foreground">
+                                Creado: {new Date(user.created_at).toLocaleDateString()} por {user.created_by || 'sistema'}
+                              </span>
+                            )}
+                          </div>
+                          {user.updated_at && user.updated_at !== user.created_at && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Actualizado: {new Date(user.updated_at).toLocaleDateString()} por {user.updated_by || 'sistema'}
+                            </p>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <Button

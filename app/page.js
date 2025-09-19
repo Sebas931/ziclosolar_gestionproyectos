@@ -43,11 +43,11 @@ export default function App() {
   });
   
   const [entityForms, setEntityForms] = useState({
-    project: { code: '', name: '', cost_center_id: '' },
-    costCenter: { code: '', name: '' },
-    engineer: { document_number: '', title: '', user_id: '' },
-    concept: { code: '', name: '' },
-    appUser: { nombre: '', apellido: '', documento: '', correo: '', cargo: '', clave: '', rol: '' }
+    project: { code: '', name: '', cost_center_id: '', status: 'active' },
+    costCenter: { code: '', name: '', status: 'active' },
+    engineer: { document_number: '', title: '', user_id: '', status: 'active' },
+    concept: { code: '', name: '', status: 'active' },
+    appUser: { nombre: '', apellido: '', documento: '', correo: '', cargo: '', clave: '', rol: '', status: 'active' }
   });
   
   // Dialog states

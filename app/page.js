@@ -1110,9 +1110,18 @@ export default function App() {
                           <p className="font-medium">{project.name}</p>
                           <p className="text-sm text-muted-foreground">{project.code}</p>
                         </div>
-                        <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
-                          {project.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => editEntity(project, 'project')}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
+                            {project.status}
+                          </Badge>
+                        </div>
                       </div>
                     ))}
                   </div>

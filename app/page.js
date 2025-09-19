@@ -1833,6 +1833,21 @@ export default function App() {
                     required
                   />
                 </div>
+                <div className="col-span-2">
+                  <Label htmlFor="concept_status">Estado</Label>
+                  <Select value={entityForms.concept.status || 'active'} onValueChange={(value) => setEntityForms({
+                    ...entityForms,
+                    concept: {...entityForms.concept, status: value}
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Activo</SelectItem>
+                      <SelectItem value="inactive">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             )}
 

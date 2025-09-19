@@ -1153,9 +1153,18 @@ export default function App() {
                           <p className="font-medium">{cc.name}</p>
                           <p className="text-sm text-muted-foreground">{cc.code}</p>
                         </div>
-                        <Badge variant={cc.status === 'active' ? 'default' : 'secondary'}>
-                          {cc.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => editEntity(cc, 'costCenter')}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Badge variant={cc.status === 'active' ? 'default' : 'secondary'}>
+                            {cc.status}
+                          </Badge>
+                        </div>
                       </div>
                     ))}
                   </div>

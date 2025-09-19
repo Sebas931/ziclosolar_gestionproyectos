@@ -649,7 +649,10 @@ export async function POST(request, { params }) {
         status: body.status || 'active',
         leader_user_id: body.leader_user_id,
         cost_center_id: body.cost_center_id,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        created_by: body.created_by || 'system',
+        updated_at: new Date().toISOString(),
+        updated_by: body.created_by || 'system'
       };
       
       await db.collection('projects').insertOne(project);

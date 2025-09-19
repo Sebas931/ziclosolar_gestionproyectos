@@ -1629,6 +1629,21 @@ export default function App() {
                     required
                   />
                 </div>
+                <div className="col-span-2">
+                  <Label htmlFor="costcenter_status">Estado</Label>
+                  <Select value={entityForms.costCenter.status || 'active'} onValueChange={(value) => setEntityForms({
+                    ...entityForms,
+                    costCenter: {...entityForms.costCenter, status: value}
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Activo</SelectItem>
+                      <SelectItem value="inactive">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             )}
 

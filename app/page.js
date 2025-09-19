@@ -1166,10 +1166,18 @@ export default function App() {
                 <CardContent>
                   <div className="space-y-2">
                     {costCenters.map((cc) => (
-                      <div key={cc.id} className="flex justify-between items-center p-2 border rounded">
-                        <div>
+                      <div key={cc.id} className="flex justify-between items-center p-3 border rounded">
+                        <div className="flex-1">
                           <p className="font-medium">{cc.name}</p>
                           <p className="text-sm text-muted-foreground">{cc.code}</p>
+                          {cc.created_at && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              <p>Creado: {new Date(cc.created_at).toLocaleDateString()} por {cc.created_by || 'sistema'}</p>
+                              {cc.updated_at && cc.updated_at !== cc.created_at && (
+                                <p>Actualizado: {new Date(cc.updated_at).toLocaleDateString()} por {cc.updated_by || 'sistema'}</p>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <Button

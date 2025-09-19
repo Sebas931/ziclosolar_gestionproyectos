@@ -712,6 +712,7 @@ export async function POST(request, { params }) {
         documento: body.documento,
         correo: body.correo,
         cargo: body.cargo,
+        clave: body.clave, // Password field
         rol: body.rol, // 'admin' or 'lider'
         status: body.status || 'active',
         created_at: new Date().toISOString(),
@@ -721,7 +722,7 @@ export async function POST(request, { params }) {
       };
       
       // Validate required fields
-      if (!appUser.nombre || !appUser.apellido || !appUser.documento || !appUser.correo || !appUser.rol) {
+      if (!appUser.nombre || !appUser.apellido || !appUser.documento || !appUser.correo || !appUser.clave || !appUser.rol) {
         return corsResponse(NextResponse.json({ 
           success: false, 
           message: 'Todos los campos obligatorios deben ser completados' 
@@ -752,9 +753,9 @@ export async function POST(request, { params }) {
       }
       
       await db.collection('app_users').insertOne(appUser);
-      await logAudit('CREATE', 'app_user', appUser.id, appUser);
+      await logAudit('CREATE', 'app_user', appUser.id, { ...appUser, clave: '[HIDDEN]' }); // Hide password in audit
       
-      return corsResponse(NextResponse.json({ success: true, data: appUser }));
+      return corsResponse(NextResponse.json({ success: true, data: { ...appUser, clave: '[HIDDEN]' } }));
     }
     
     if (pathSegments[0] === 'time-entries') {

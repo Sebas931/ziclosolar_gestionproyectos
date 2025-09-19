@@ -1727,20 +1727,37 @@ export default function App() {
                     />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="rol">Rol</Label>
-                  <Select value={entityForms.appUser.rol} onValueChange={(value) => setEntityForms({
-                    ...entityForms,
-                    appUser: {...entityForms.appUser, rol: value}
-                  })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar rol" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Administrador</SelectItem>
-                      <SelectItem value="lider">Líder</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="rol">Rol</Label>
+                    <Select value={entityForms.appUser.rol} onValueChange={(value) => setEntityForms({
+                      ...entityForms,
+                      appUser: {...entityForms.appUser, rol: value}
+                    })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                        <SelectItem value="lider">Líder</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="status">Estado</Label>
+                    <Select value={entityForms.appUser.status || 'active'} onValueChange={(value) => setEntityForms({
+                      ...entityForms,
+                      appUser: {...entityForms.appUser, status: value}
+                    })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Activo</SelectItem>
+                        <SelectItem value="inactive">Inactivo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </>
             )}

@@ -253,6 +253,64 @@ export default function App() {
     }
   };
 
+  // Edit entity function
+  const editEntity = (entity, entityType) => {
+    setCurrentEntity(entityType);
+    setEditingEntityId(entity.id);
+    
+    // Load entity data into form based on type
+    if (entityType === 'appUser') {
+      setEntityForms({
+        ...entityForms,
+        appUser: {
+          nombre: entity.nombre,
+          apellido: entity.apellido,
+          documento: entity.documento,
+          correo: entity.correo,
+          cargo: entity.cargo || '',
+          clave: '', // Don't pre-fill password
+          rol: entity.rol
+        }
+      });
+    } else if (entityType === 'project') {
+      setEntityForms({
+        ...entityForms,
+        project: {
+          code: entity.code,
+          name: entity.name,
+          cost_center_id: entity.cost_center_id || ''
+        }
+      });
+    } else if (entityType === 'costCenter') {
+      setEntityForms({
+        ...entityForms,
+        costCenter: {
+          code: entity.code,
+          name: entity.name
+        }
+      });
+    } else if (entityType === 'engineer') {
+      setEntityForms({
+        ...entityForms,
+        engineer: {
+          document_number: entity.document_number,
+          title: entity.title,
+          user_id: entity.user_id || ''
+        }
+      });
+    } else if (entityType === 'concept') {
+      setEntityForms({
+        ...entityForms,
+        concept: {
+          code: entity.code,
+          name: entity.name
+        }
+      });
+    }
+    
+    setShowEntityDialog(true);
+  };
+
   // Filter time entries based on current filters
   const filteredTimeEntries = projectTimeEntries.filter(entry => {
     const entryDate = entry.date;

@@ -1556,20 +1556,33 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="rol">Rol</Label>
-                    <Select value={entityForms.appUser.rol} onValueChange={(value) => setEntityForms({
-                      ...entityForms,
-                      appUser: {...entityForms.appUser, rol: value}
-                    })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar rol" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Administrador</SelectItem>
-                        <SelectItem value="lider">Líder</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="clave">Clave</Label>
+                    <Input
+                      id="clave"
+                      type="password"
+                      value={entityForms.appUser.clave}
+                      onChange={(e) => setEntityForms({
+                        ...entityForms,
+                        appUser: {...entityForms.appUser, clave: e.target.value}
+                      })}
+                      required
+                    />
                   </div>
+                </div>
+                <div>
+                  <Label htmlFor="rol">Rol</Label>
+                  <Select value={entityForms.appUser.rol} onValueChange={(value) => setEntityForms({
+                    ...entityForms,
+                    appUser: {...entityForms.appUser, rol: value}
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar rol" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Administrador</SelectItem>
+                      <SelectItem value="lider">Líder</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             )}

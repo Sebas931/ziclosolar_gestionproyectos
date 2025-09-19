@@ -486,6 +486,149 @@ export async function GET(request, { params }) {
       return corsResponse(NextResponse.json({ success: true, data: concepts }));
     }
     
+    if (pathSegments[0] === 'projects') {
+      const updateData = {
+        code: body.code,
+        name: body.name,
+        status: body.status,
+        leader_user_id: body.leader_user_id,
+        cost_center_id: body.cost_center_id,
+        updated_at: new Date().toISOString(),
+        updated_by: body.updated_by || 'system'
+      };
+      
+      // Validate required fields
+      if (!updateData.code || !updateData.name) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Código y nombre son obligatorios' 
+        }, { status: 400 }));
+      }
+      
+      const result = await db.collection('projects').findOneAndUpdate(
+        { id: id },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+      
+      if (!result) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Proyecto no encontrado' 
+        }, { status: 404 }));
+      }
+      
+      await logAudit('UPDATE', 'project', id, updateData);
+      
+      return corsResponse(NextResponse.json({ success: true, data: result }));
+    }
+    
+    if (pathSegments[0] === 'cost-centers') {
+      const updateData = {
+        code: body.code,
+        name: body.name,
+        status: body.status,
+        updated_at: new Date().toISOString(),
+        updated_by: body.updated_by || 'system'
+      };
+      
+      // Validate required fields
+      if (!updateData.code || !updateData.name) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Código y nombre son obligatorios' 
+        }, { status: 400 }));
+      }
+      
+      const result = await db.collection('cost_centers').findOneAndUpdate(
+        { id: id },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+      
+      if (!result) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Centro de costo no encontrado' 
+        }, { status: 404 }));
+      }
+      
+      await logAudit('UPDATE', 'cost_center', id, updateData);
+      
+      return corsResponse(NextResponse.json({ success: true, data: result }));
+    }
+    
+    if (pathSegments[0] === 'engineers') {
+      const updateData = {
+        user_id: body.user_id,
+        document_number: body.document_number,
+        title: body.title,
+        status: body.status,
+        updated_at: new Date().toISOString(),
+        updated_by: body.updated_by || 'system'
+      };
+      
+      // Validate required fields
+      if (!updateData.document_number || !updateData.title) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Documento y título son obligatorios' 
+        }, { status: 400 }));
+      }
+      
+      const result = await db.collection('engineers').findOneAndUpdate(
+        { id: id },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+      
+      if (!result) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Ingeniero no encontrado' 
+        }, { status: 404 }));
+      }
+      
+      await logAudit('UPDATE', 'engineer', id, updateData);
+      
+      return corsResponse(NextResponse.json({ success: true, data: result }));
+    }
+    
+    if (pathSegments[0] === 'concepts') {
+      const updateData = {
+        code: body.code,
+        name: body.name,
+        status: body.status,
+        updated_at: new Date().toISOString(),
+        updated_by: body.updated_by || 'system'
+      };
+      
+      // Validate required fields
+      if (!updateData.code || !updateData.name) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Código y nombre son obligatorios' 
+        }, { status: 400 }));
+      }
+      
+      const result = await db.collection('concepts').findOneAndUpdate(
+        { id: id },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+      
+      if (!result) {
+        return corsResponse(NextResponse.json({ 
+          success: false, 
+          message: 'Concepto no encontrado' 
+        }, { status: 404 }));
+      }
+      
+      await logAudit('UPDATE', 'concept', id, updateData);
+      
+      return corsResponse(NextResponse.json({ success: true, data: result }));
+    }
+    
     if (pathSegments[0] === 'time-entries') {
       const { searchParams } = new URL(request.url);
       const startDate = searchParams.get('start_date');

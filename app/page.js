@@ -47,7 +47,7 @@ export default function App() {
     costCenter: { code: '', name: '' },
     engineer: { document_number: '', title: '', user_id: '' },
     concept: { code: '', name: '' },
-    appUser: { nombre: '', apellido: '', documento: '', correo: '', cargo: '', rol: '' }
+    appUser: { nombre: '', apellido: '', documento: '', correo: '', cargo: '', clave: '', rol: '' }
   });
   
   // Dialog states

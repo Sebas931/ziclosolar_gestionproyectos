@@ -55,6 +55,7 @@ export default function App() {
   const [showEntityDialog, setShowEntityDialog] = useState(false);
   const [currentEntity, setCurrentEntity] = useState('');
   const [editingId, setEditingId] = useState(null);
+  const [editingEntityId, setEditingEntityId] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   
   // Export and reopen states

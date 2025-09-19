@@ -1217,10 +1217,18 @@ export default function App() {
                 <CardContent>
                   <div className="space-y-2">
                     {engineers.map((engineer) => (
-                      <div key={engineer.id} className="flex justify-between items-center p-2 border rounded">
-                        <div>
+                      <div key={engineer.id} className="flex justify-between items-center p-3 border rounded">
+                        <div className="flex-1">
                           <p className="font-medium">{engineer.title}</p>
                           <p className="text-sm text-muted-foreground">CC: {engineer.document_number}</p>
+                          {engineer.created_at && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              <p>Creado: {new Date(engineer.created_at).toLocaleDateString()} por {engineer.created_by || 'sistema'}</p>
+                              {engineer.updated_at && engineer.updated_at !== engineer.created_at && (
+                                <p>Actualizado: {new Date(engineer.updated_at).toLocaleDateString()} por {engineer.updated_by || 'sistema'}</p>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <Button

@@ -202,13 +202,25 @@ export default function App() {
       const endpoint = currentEntity === 'costCenter' ? 'cost-centers' : 
                       currentEntity === 'appUser' ? 'app-users' : 
                       `${currentEntity}s`;
-      await apiCall(endpoint, 'POST', entityForms[currentEntity]);
       
-      toast.success(`${currentEntity === 'costCenter' ? 'Centro de costos' : 
-                      currentEntity === 'engineer' ? 'Ingeniero' : 
-                      currentEntity === 'concept' ? 'Concepto' : 
-                      currentEntity === 'appUser' ? 'Usuario' : 'Proyecto'} creado exitosamente`);
+      if (editingEntityId) {
+        // Update existing entity
+        await apiCall(`${endpoint}/${editingEntityId}`, 'PUT', entityForms[currentEntity]);
+        toast.success(`${currentEntity === 'costCenter' ? 'Centro de costos' : 
+                        currentEntity === 'engineer' ? 'Ingeniero' : 
+                        currentEntity === 'concept' ? 'Concepto' : 
+                        currentEntity === 'appUser' ? 'Usuario' : 'Proyecto'} actualizado exitosamente`);
+      } else {
+        // Create new entity
+        await apiCall(endpoint, 'POST', entityForms[currentEntity]);
+        toast.success(`${currentEntity === 'costCenter' ? 'Centro de costos' : 
+                        currentEntity === 'engineer' ? 'Ingeniero' : 
+                        currentEntity === 'concept' ? 'Concepto' : 
+                        currentEntity === 'appUser' ? 'Usuario' : 'Proyecto'} creado exitosamente`);
+      }
+      
       setShowEntityDialog(false);
+      setEditingEntityId(null);
       setEntityForms({
         ...entityForms,
         [currentEntity]: currentEntity === 'project' 

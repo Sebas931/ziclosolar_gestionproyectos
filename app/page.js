@@ -960,7 +960,46 @@ export default function App() {
           <TabsContent value="admin-panel" className="space-y-6">
             <h2 className="text-2xl font-bold">Panel de Administración</h2>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
+              {/* App Users */}
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Usuarios</CardTitle>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setCurrentEntity('appUser');
+                        setShowEntityDialog(true);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {appUsers.map((user) => (
+                      <div key={user.id} className="flex justify-between items-center p-2 border rounded">
+                        <div>
+                          <p className="font-medium">{user.nombre} {user.apellido}</p>
+                          <p className="text-sm text-muted-foreground">{user.correo}</p>
+                          <p className="text-xs text-muted-foreground">
+                            <Badge variant={user.rol === 'admin' ? 'default' : 'secondary'} className="text-xs">
+                              {user.rol}
+                            </Badge>
+                          </p>
+                        </div>
+                        <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                          {user.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Projects */}
               <Card>
                 <CardHeader>

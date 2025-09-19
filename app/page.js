@@ -1115,10 +1115,18 @@ export default function App() {
                 <CardContent>
                   <div className="space-y-2">
                     {projects.map((project) => (
-                      <div key={project.id} className="flex justify-between items-center p-2 border rounded">
-                        <div>
+                      <div key={project.id} className="flex justify-between items-center p-3 border rounded">
+                        <div className="flex-1">
                           <p className="font-medium">{project.name}</p>
                           <p className="text-sm text-muted-foreground">{project.code}</p>
+                          {project.created_at && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              <p>Creado: {new Date(project.created_at).toLocaleDateString()} por {project.created_by || 'sistema'}</p>
+                              {project.updated_at && project.updated_at !== project.created_at && (
+                                <p>Actualizado: {new Date(project.updated_at).toLocaleDateString()} por {project.updated_by || 'sistema'}</p>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <Button

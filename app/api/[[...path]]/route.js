@@ -667,7 +667,10 @@ export async function POST(request, { params }) {
         code: body.code,
         name: body.name,
         status: body.status || 'active',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        created_by: body.created_by || 'system',
+        updated_at: new Date().toISOString(),
+        updated_by: body.created_by || 'system'
       };
       
       await db.collection('cost_centers').insertOne(costCenter);

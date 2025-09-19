@@ -1483,6 +1483,92 @@ export default function App() {
               </div>
             )}
 
+            {currentEntity === 'appUser' && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="nombre">Nombre</Label>
+                    <Input
+                      id="nombre"
+                      value={entityForms.appUser.nombre}
+                      onChange={(e) => setEntityForms({
+                        ...entityForms,
+                        appUser: {...entityForms.appUser, nombre: e.target.value}
+                      })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="apellido">Apellido</Label>
+                    <Input
+                      id="apellido"
+                      value={entityForms.appUser.apellido}
+                      onChange={(e) => setEntityForms({
+                        ...entityForms,
+                        appUser: {...entityForms.appUser, apellido: e.target.value}
+                      })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="documento">Documento</Label>
+                    <Input
+                      id="documento"
+                      value={entityForms.appUser.documento}
+                      onChange={(e) => setEntityForms({
+                        ...entityForms,
+                        appUser: {...entityForms.appUser, documento: e.target.value}
+                      })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="correo">Correo Electrónico</Label>
+                    <Input
+                      id="correo"
+                      type="email"
+                      value={entityForms.appUser.correo}
+                      onChange={(e) => setEntityForms({
+                        ...entityForms,
+                        appUser: {...entityForms.appUser, correo: e.target.value}
+                      })}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="cargo">Cargo</Label>
+                    <Input
+                      id="cargo"
+                      value={entityForms.appUser.cargo}
+                      onChange={(e) => setEntityForms({
+                        ...entityForms,
+                        appUser: {...entityForms.appUser, cargo: e.target.value}
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="rol">Rol</Label>
+                    <Select value={entityForms.appUser.rol} onValueChange={(value) => setEntityForms({
+                      ...entityForms,
+                      appUser: {...entityForms.appUser, rol: value}
+                    })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                        <SelectItem value="lider">Líder</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </>
+            )}
+
             {currentEntity === 'concept' && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
